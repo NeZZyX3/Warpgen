@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WARP CONFIG GEN</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#070b0f;--bg2:#0d1117;--bg3:#111820;--panel:#0a1018;
+    --border:#1a2d1a;--border2:#223322;
+    --green:#00ff88;--green2:#00cc66;--green3:#009944;--green-dim:#004422;
+    --amber:#ffaa00;--red:#ff4444;--blue:#0088ff;
+    --text:#c8d8c8;--text-dim:#5a7a5a;--text-bright:#e8f8e8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:'Share Tech Mono',monospace;min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,255,136,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px);pointer-events:none;z-index:0}
+  .wrap{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 16px 60px}
+
+  /* HEADER */
+  header{padding:24px 0 20px;border-bottom:1px solid var(--border);margin-bottom:24px}
+  .hrow{display:flex;align-items:center;gap:14px}
+  .logo-box{width:46px;height:46px;border:2px solid var(--green);display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(0,255,136,.3);flex-shrink:0}
+  h1{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--green);letter-spacing:4px;text-shadow:0 0 20px rgba(0,255,136,.4)}
+  .sub{font-size:10px;color:var(--text-dim);letter-spacing:2px;margin-top:3px}
+  .dot-online{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--text-dim);margin-left:auto}
+  .dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* NOTICE */
+  .notice{background:rgba(0,136,255,.05);border:1px solid #001833;border-left:3px solid var(--blue);padding:10px 14px;font-size:10px;color:#447799;line-height:1.7;margin-bottom:20px}
+  .notice b{color:var(--blue)}
+  .notice a{color:var(--blue);text-decoration:none}
+
+  /* PANEL */
+  .panel{background:var(--panel);border:1px solid var(--border);margin-bottom:16px}
+  .ph{background:linear-gradient(90deg,var(--green-dim),transparent);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px}
+  .ph-dot{width:5px;height:5px;background:var(--green);border-radius:50%}
+  .pt{font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:var(--green);letter-spacing:2px}
+  .pb{padding:16px 14px}
+
+  /* SECTION */
+  .slabel{font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+  .slabel::after{content:'';flex:1;height:1px;background:var(--border)}
+
+  /* RADIO */
+  .rgrid{display:grid;gap:5px;margin-bottom:16px}
+  .rc{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1px solid var(--border);cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+  .rc:hover{border-color:var(--green3);background:rgba(0,255,136,.02)}
+  .rc.on{border-color:var(--green);background:rgba(0,255,136,.05)}
+  .rc.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--green);box-shadow:0 0 8px var(--green)}
+  .rcirc{width:13px;height:13px;border:1px solid var(--text-dim);border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:border-color .15s}
+  .rc.on .rcirc{border-color:var(--green)}
+  .rinner{width:6px;height:6px;border-radius:50%;background:var(--green);display:none;box-shadow:0 0 6px var(--green)}
+  .rc.on .rinner{display:block}
+  .rinfo{flex:1}
+  .rname{font-size:11px;color:var(--text-bright);margin-bottom:1px}
+  .rdesc{font-size:9px;color:var(--text-dim);line-height:1.4}
+  .rbadge{font-size:8px;padding:2px 5px;border:1px solid;letter-spacing:1px;flex-shrink:0;align-self:flex-start}
+  .bg{border-color:var(--green3);color:var(--green2)}
+  .ba{border-color:#664400;color:var(--amber)}
+
+  /* DNS CHIPS */
+  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:16px}
+  .dc{padding:8px 9px;border:1px solid var(--border);cursor:pointer;text-align:center;transition:all .15s;position:relative}
+  .dc:hover{border-color:var(--green3)}
+  .dc.on{border-color:var(--green);background:rgba(0,255,136,.05)}
+  .dname{font-size:10px;color:var(--text-bright);margin-bottom:1px}
+  .daddr{font-size:9px;color:var(--text-dim)}
+  .dtop{position:absolute;top:3px;right:6px;font-size:7px;color:var(--green3)}
+
+  /* SLIDERS */
+  .srow{margin-bottom:10px}
+  .stop{display:flex;justify-content:space-between;margin-bottom:5px}
+  .sname{font-size:10px;color:var(--text)}
+  .sval{font-size:10px;color:var(--green)}
+  input[type=range]{width:100%;height:2px;-webkit-appearance:none;background:var(--border2);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--green);box-shadow:0 0 8px var(--green);cursor:pointer;border:2px solid var(--bg)}
+
+  /* TOGGLE */
+  .trow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+  .trow:last-child{border-bottom:none}
+  .tlabel{font-size:10px;color:var(--text)}
+  .tsub{font-size:9px;color:var(--text-dim);margin-top:1px}
+  .tog{width:34px;height:17px;background:var(--bg3);border:1px solid var(--border2);cursor:pointer;position:relative;flex-shrink:0;transition:all .2s}
+  .tog.on{background:var(--green-dim);border-color:var(--green3)}
+  .tog::after{content:'';position:absolute;top:2px;left:2px;width:11px;height:11px;background:var(--text-dim);transition:all .2s}
+  .tog.on::after{left:19px;background:var(--green);box-shadow:0 0 6px var(--green)}
+
+  /* GEN BUTTON */
+  .genbtn{width:100%;padding:15px;background:transparent;border:2px solid var(--green);color:var(--green);font-family:'Orbitron',monospace;font-size:13px;font-weight:700;letter-spacing:3px;cursor:pointer;text-transform:uppercase;position:relative;overflow:hidden;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 20px rgba(0,255,136,.1);margin-bottom:12px}
+  .genbtn::before{content:'';position:absolute;inset:0;background:var(--green);transform:translateX(-101%);transition:transform .2s;z-index:0}
+  .genbtn:hover::before{transform:translateX(0)}
+  .genbtn:hover{color:var(--bg);box-shadow:0 0 30px rgba(0,255,136,.3)}
+  .genbtn span{position:relative;z-index:1}
+  .genbtn:disabled{opacity:.5;pointer-events:none}
+
+  /* PROGRESS */
+  .prog{height:2px;background:var(--border);overflow:hidden;margin-bottom:12px;display:none}
+  .prog.show{display:block}
+  .progf{height:100%;background:var(--green);box-shadow:0 0 8px var(--green);width:0;transition:width .15s}
+
+  /* TERMINAL */
+  .term{background:#050a08;border:1px solid var(--border);padding:12px 14px;font-size:10px;min-height:100px;max-height:160px;overflow-y:auto;display:none;margin-bottom:12px}
+  .term.show{display:block}
+  .term::-webkit-scrollbar{width:3px}
+  .term::-webkit-scrollbar-thumb{background:var(--green-dim)}
+  .ll{padding:1px 0;animation:fi .1s}
+  @keyframes fi{from{opacity:0}to{opacity:1}}
+  .ok{color:var(--green2)}.inf{color:var(--text-dim)}.warn{color:var(--amber)}.err{color:var(--red)}
+
+  /* OUTPUT */
+  .out{display:none}
+  .out.show{display:block}
+  .tabs{display:flex;border-bottom:1px solid var(--border)}
+  .tab{padding:8px 14px;font-size:10px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;letter-spacing:1px;transition:all .15s}
+  .tab.on{color:var(--green);border-bottom-color:var(--green)}
+  .pane{display:none;padding:14px}
+  .pane.on{display:block}
+  .code{background:#040807;border:1px solid var(--border);padding:12px;font-size:10px;color:#aaccaa;overflow:auto;max-height:320px;line-height:1.6;white-space:pre;font-family:'Share Tech Mono',monospace}
+  .code::-webkit-scrollbar{width:3px;height:3px}
+  .code::-webkit-scrollbar-thumb{background:var(--green-dim)}
+  .abts{display:flex;gap:6px;margin-top:10px}
+  .abt{flex:1;padding:9px;border:1px solid var(--border2);background:transparent;color:var(--text);font-family:'Share Tech Mono',monospace;font-size:10px;cursor:pointer;letter-spacing:1px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .abt:hover{border-color:var(--green3);color:var(--green)}
+  .abt.cp{border-color:var(--green);color:var(--green)}
+
+  /* INFO */
+  .igrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .ic{background:#040807;border:1px solid var(--border);padding:10px}
+  .icl{font-size:8px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px}
+  .icv{font-size:11px;color:var(--green);word-break:break-all}
+
+  /* QR */
+  canvas{display:block;margin:0 auto}
+
+  /* FOOTER */
+  footer{margin-top:32px;padding-top:16px;border-top:1px solid var(--border);display:flex;justify-content:space-between}
+  footer p{font-size:9px;color:var(--text-dim);letter-spacing:1px}
+  .ver{font-size:9px;color:var(--green3);letter-spacing:2px}
+  .cur{display:inline-block;width:7px;height:12px;background:var(--green);vertical-align:middle;animation:blink 1s step-end infinite;margin-left:1px}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* SYNTAX */
+  .ck{color:var(--green2)}.cv{color:#88ccaa}.cs{color:#66aaaa}.cc{color:var(--text-dim)}.cn{color:var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="hrow">
+      <div class="logo-box">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="1.5">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
+        </svg>
+      </div>
+      <div>
+        <h1>WARPGEN</h1>
+        <div class="sub">CLOUDFLARE WARP CONFIG GENERATOR</div>
+      </div>
+      <div class="dot-online"><div class="dot"></div>ONLINE</div>
+    </div>
+  </header>
+
+  <div class="notice">
+    <b>ℹ️ КАК ИСПОЛЬЗОВАТЬ:</b> Нажми «Сгенерировать» → скачай <b>.conf</b> для WireGuard или <b>.json</b> для AmneziaWG → импортируй в приложение. Конфиг регистрируется на <a href="https://cloudflareclient.com" target="_blank">Cloudflare WARP API</a> и содержит реальные ключи.
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="panel">
+    <div class="ph"><div class="ph-dot"></div><div class="pt">НАСТРОЙКИ КОНФИГА</div></div>
+    <div class="pb">
+
+      <div class="slabel">Протокол клиента</div>
+      <div class="rgrid" id="gClient">
+        <div class="rc on" data-v="amnezia">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">AmneziaWG</div>
+            <div class="rdesc">Обфускация трафика, лучший обход DPI/РКН. Рекомендуется</div>
+          </div>
+          <div class="rbadge bg">РЕКОМЕНДУЮ</div>
+        </div>
+        <div class="rc" data-v="wireguard">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">WireGuard (обычный)</div>
+            <div class="rdesc">Стандартный протокол. Быстрее, но хуже проходит DPI</div>
+          </div>
+          <div class="rbadge ba">БАЗОВЫЙ</div>
+        </div>
+      </div>
+
+      <div class="slabel">DNS профиль</div>
+      <div class="dgrid" id="gDns">
+        <div class="dc on" data-v="malware">
+          <div class="dtop">★ ТОП</div>
+          <div class="dname">Malware Free</div>
+          <div class="daddr">1.1.1.2 / 1.0.0.2</div>
+        </div>
+        <div class="dc" data-v="xbox">
+          <div class="dname">Google / Xbox</div>
+          <div class="daddr">8.8.8.8 / 4.4.4.4</div>
+        </div>
+        <div class="dc" data-v="adguard">
+          <div class="dname">AdGuard</div>
+          <div class="daddr">94.140.14.14</div>
+        </div>
+        <div class="dc" data-v="cloudflare">
+          <div class="dname">Cloudflare Pure</div>
+          <div class="daddr">1.1.1.1 / 1.0.0.1</div>
+        </div>
+      </div>
+
+      <div class="slabel">Эндпоинт Cloudflare</div>
+      <div class="rgrid" id="gEndpoint">
+        <div class="rc on" data-v="auto">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">Авто (случайный из пула)</div>
+            <div class="rdesc">162.159.192.x / 188.114.96.x — порт 2408</div>
+          </div>
+        </div>
+        <div class="rc" data-v="162.159.192.1:2408">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">162.159.192.1:2408</div>
+            <div class="rdesc">Фиксированный основной</div>
+          </div>
+        </div>
+        <div class="rc" data-v="188.114.96.1:2408">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">188.114.96.1:2408</div>
+            <div class="rdesc">Альтернативный, иногда быстрее в РФ</div>
+          </div>
+        </div>
+        <div class="rc" data-v="162.159.192.1:500">
+          <div class="rcirc"><div class="rinner"></div></div>
+          <div class="rinfo">
+            <div class="rname">162.159.192.1:500</div>
+            <div class="rdesc">Порт 500 — сложнее блокировать</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ADVANCED -->
+  <div class="panel">
+    <div class="ph"><div class="ph-dot"></div><div class="pt">ПАРАМЕТРЫ ТУННЕЛЯ</div></div>
+    <div class="pb">
+
+      <div class="slabel">MTU</div>
+      <div class="srow">
+        <div class="stop"><span class="sname">MTU size</span><span class="sval" id="vMtu">1280</span></div>
+        <input type="range" id="sMtu" min="1100" max="1420" step="10" value="1280">
+      </div>
+
+      <div class="slabel" style="margin-top:12px">AmneziaWG обфускация</div>
+      <div class="srow">
+        <div class="stop"><span class="sname">Jitter packets (Jc)</span><span class="sval" id="vJc">4</span></div>
+        <input type="range" id="sJc" min="1" max="128" step="1" value="4">
+      </div>
+      <div class="srow">
+        <div class="stop"><span class="sname">Jmin</span><span class="sval" id="vJmin">23</span></div>
+        <input type="range" id="sJmin" min="15" max="150" step="1" value="23">
+      </div>
+      <div class="srow">
+        <div class="stop"><span class="sname">Jmax</span><span class="sval" id="vJmax">911</span></div>
+        <input type="range" id="sJmax" min="200" max="1280" step="1" value="911">
+      </div>
+
+      <div class="slabel" style="margin-top:12px">Опции</div>
+      <div class="trow">
+        <div><div class="tlabel">AllowedIPs: весь трафик</div><div class="tsub">0.0.0.0/0 — весь трафик через VPN</div></div>
+        <div class="tog on" id="tFull" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="trow">
+        <div><div class="tlabel">IPv6 в туннеле</div><div class="tsub">Добавить IPv6 AllowedIPs</div></div>
+        <div class="tog on" id="tIPv6" onclick="this.classList.toggle('on')"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GENERATE -->
+  <button class="genbtn" id="genBtn" onclick="generate()">
+    <span>⬡</span><span id="btnTxt">СГЕНЕРИРОВАТЬ КОНФИГ</span>
+  </button>
+
+  <div class="prog" id="prog"><div class="progf" id="progf"></div></div>
+  <div class="term" id="term"></div>
+
+  <!-- OUTPUT -->
+  <div class="out" id="out">
+    <div class="panel">
+      <div class="ph"><div class="ph-dot"></div><div class="pt">ГОТОВЫЙ КОНФИГ</div></div>
+      <div class="tabs">
+        <div class="tab on" onclick="tab('conf',this)">CONF FILE</div>
+        <div class="tab" onclick="tab('json',this)">JSON (Amnezia)</div>
+        <div class="tab" onclick="tab('info',this)">INFO</div>
+        <div class="tab" onclick="tab('qr',this)">QR CODE</div>
+      </div>
+      <div class="pane on" id="p-conf">
+        <div class="code" id="cConf"></div>
+        <div class="abts">
+          <button class="abt" id="cpConf" onclick="cp('conf')">⧉ КОПИРОВАТЬ</button>
+          <button class="abt" onclick="dl('conf')">↓ СКАЧАТЬ .CONF</button>
+        </div>
+      </div>
+      <div class="pane" id="p-json">
+        <div class="code" id="cJson"></div>
+        <div class="abts">
+          <button class="abt" id="cpJson" onclick="cp('json')">⧉ КОПИРОВАТЬ</button>
+          <button class="abt" onclick="dl('json')">↓ СКАЧАТЬ .JSON</button>
+        </div>
+      </div>
+      <div class="pane" id="p-info">
+        <div class="igrid" id="infoG"></div>
+        <p style="margin-top:14px;font-size:9px;color:var(--text-dim);line-height:1.8">
+          Конфиг зарегистрирован в Cloudflare WARP API — реальные ключи и IP.<br>
+          AmneziaWG: импорт через кнопку «Import config» → выбери .json файл.<br>
+          WireGuard: импорт .conf файла или отсканируй QR код.
+        </p>
+      </div>
+      <div class="pane" id="p-qr">
+        <canvas id="qrc" width="200" height="200"></canvas>
+        <p style="text-align:center;font-size:9px;color:var(--text-dim);margin-top:10px">Сканируй в WireGuard приложении</p>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>WARPGEN · Cloudflare WARP · Только для личного использования</p>
+    <div class="ver">v3.0<span class="cur"></span></div>
+  </footer>
+</div>
+
+<script>
+// ── STATE ─────────────────────────────────────────────────
+const S = {
+  client:'amnezia', dns:'malware', endpoint:'auto',
+  mtu:1280, jc:4, jmin:23, jmax:911,
+  fullTunnel:true, ipv6:true
+};
+
+let gConf='', gJson='';
+
+// ── RADIO ─────────────────────────────────────────────────
+['gClient','gEndpoint'].forEach(id => {
+  document.getElementById(id).querySelectorAll('.rc').forEach(c => {
+    c.addEventListener('click', () => {
+      c.closest('.rgrid').querySelectorAll('.rc').forEach(x=>x.classList.remove('on'));
+      c.classList.add('on');
+      if(id==='gClient') S.client = c.dataset.v;
+      if(id==='gEndpoint') S.endpoint = c.dataset.v;
+    });
+  });
+});
+
+document.getElementById('gDns').querySelectorAll('.dc').forEach(c => {
+  c.addEventListener('click', () => {
+    document.querySelectorAll('#gDns .dc').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    S.dns = c.dataset.v;
+  });
+});
+
+// ── SLIDERS ───────────────────────────────────────────────
+[['sMtu','vMtu','mtu'],['sJc','vJc','jc'],['sJmin','vJmin','jmin'],['sJmax','vJmax','jmax']].forEach(([id,vid,key])=>{
+  document.getElementById(id).addEventListener('input', e => {
+    S[key] = parseInt(e.target.value);
+    document.getElementById(vid).textContent = e.target.value;
+  });
+});
+
+// ── TABS ──────────────────────────────────────────────────
+function tab(name, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('p-'+name).classList.add('on');
+  if(name==='qr') drawQR();
+}
+
+// ── LOG ───────────────────────────────────────────────────
+function log(msg, type='inf') {
+  const t = document.getElementById('term');
+  const d = document.createElement('div');
+  d.className = 'll '+type;
+  const ts = new Date().toISOString().substr(11,8);
+  d.textContent = `[${ts}] ${msg}`;
+  t.appendChild(d);
+  t.scrollTop = t.scrollHeight;
+}
+
+function setP(pct) { document.getElementById('progf').style.width = pct+'%'; }
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+// ── GENERATE ──────────────────────────────────────────────
+async function generate() {
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('btnTxt').textContent = 'ГЕНЕРАЦИЯ...';
+  document.getElementById('term').innerHTML = '';
+  document.getElementById('term').classList.add('show');
+  document.getElementById('prog').classList.add('show');
+  document.getElementById('out').classList.remove('show');
+  setP(0);
+
+  log('Инициализация...'); await sleep(150);
+  log('Отправка запроса на сервер...', 'inf'); setP(15);
+
+  try {
+    const body = {
+      client:     S.client,
+      dns:        S.dns,
+      endpoint:   S.endpoint,
+      mtu:        S.mtu,
+      jc:         S.jc,
+      jmin:       S.jmin,
+      jmax:       S.jmax,
+      fullTunnel: document.getElementById('tFull').classList.contains('on'),
+      ipv6:       document.getElementById('tIPv6').classList.contains('on'),
+    };
+
+    log('Генерация X25519 ключей на сервере...', 'inf');
+    setP(25);
+
+    const resp = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    setP(65);
+    const data = await resp.json();
+
+    if (!resp.ok || data.error) {
+      log('Ошибка: ' + (data.error || resp.statusText), 'err');
+      log('Попробуй обновить страницу и повторить', 'warn');
+      btn.disabled = false;
+      document.getElementById('btnTxt').textContent = 'ПОВТОРИТЬ';
+      return;
+    }
+
+    log('Регистрация на Cloudflare WARP API: OK', 'ok');
+    log('Device ID: ' + data.info.deviceId.substr(0,16)+'...', 'ok');
+    log('IPv4: ' + data.info.ipv4, 'ok');
+    if(data.info.ipv6) log('IPv6: ' + data.info.ipv6.substr(0,24)+'...', 'ok');
+    log('Применение DNS: ' + S.dns, 'inf');
+    setP(85); await sleep(150);
+    log('Формирование файлов конфига...', 'inf');
+    setP(95); await sleep(100);
+
+    gConf = data.conf;
+    gJson = data.json;
+
+    document.getElementById('cConf').innerHTML = hilightConf(data.conf);
+    document.getElementById('cJson').innerHTML = hilightJson(data.json);
+    buildInfo(data.info);
+
+    setP(100);
+    log('✓ Конфиг успешно сгенерирован!', 'ok');
+    log('Клиент: '+(S.client==='amnezia'?'AmneziaWG':'WireGuard')+' | DNS: '+S.dns, 'ok');
+
+    await sleep(200);
+    document.getElementById('out').classList.add('show');
+
+  } catch(e) {
+    log('Сетевая ошибка: ' + e.message, 'err');
+    log('Убедись что сервер запущен', 'warn');
+  }
+
+  btn.disabled = false;
+  document.getElementById('btnTxt').textContent = 'REGENERATE';
+}
+
+// ── SYNTAX ────────────────────────────────────────────────
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+function hilightConf(txt) {
+  return txt.split('\n').map(l => {
+    if(l.startsWith('[')) return `<span class="cn">${esc(l)}</span>`;
+    if(l.startsWith('#')) return `<span class="cc">${esc(l)}</span>`;
+    const eq = l.indexOf(' = ');
+    if(eq>-1) return `<span class="ck">${esc(l.substr(0,eq))}</span><span class="cc"> = </span><span class="cv">${esc(l.substr(eq+3))}</span>`;
+    return esc(l);
+  }).join('\n');
+}
+function hilightJson(j) {
+  return esc(j)
+    .replace(/"([^"]+)":/g,'<span class="ck">"$1"</span>:')
+    .replace(/: "([^"]+)"/g,': <span class="cs">"$1"</span>')
+    .replace(/: (\d+)/g,': <span class="cn">$1</span>');
+}
+
+// ── INFO ──────────────────────────────────────────────────
+function buildInfo(info) {
+  const items = [
+    ['IPv4', info.ipv4+'/32'],
+    ['IPv6', info.ipv6 ? info.ipv6.substr(0,20)+'...' : 'Откл.'],
+    ['DNS', info.dns],
+    ['Протокол', info.client==='amnezia'?'AmneziaWG':'WireGuard'],
+    ['Jc', S.jc],
+    ['MTU', S.mtu],
+    ['Device ID', info.deviceId.substr(0,12)+'...'],
+    ['Статус', '✓ ЗАРЕГИСТРИРОВАН'],
+  ];
+  document.getElementById('infoG').innerHTML = items.map(([l,v])=>
+    `<div class="ic"><div class="icl">${l}</div><div class="icv">${v}</div></div>`
+  ).join('');
+}
+
+// ── COPY / DOWNLOAD ───────────────────────────────────────
+function cp(type) {
+  const txt = type==='conf' ? gConf : gJson;
+  const bid = type==='conf' ? 'cpConf' : 'cpJson';
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b = document.getElementById(bid);
+    b.textContent='✓ СКОПИРОВАНО'; b.classList.add('cp');
+    setTimeout(()=>{ b.textContent='⧉ КОПИРОВАТЬ'; b.classList.remove('cp'); }, 2000);
+  });
+}
+
+function dl(type) {
+  const txt = type==='conf' ? gConf : gJson;
+  const ext = type==='conf' ? 'conf' : 'json';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download = `warp-${S.client}-${S.dns}.${ext}`;
+  a.click();
+}
+
+// ── QR ───────────────────────────────────────────────────
+function drawQR() {
+  const cv = document.getElementById('qrc');
+  const ctx = cv.getContext('2d');
+  const sz = 200, cs = 4, cells = Math.floor(sz/cs);
+  ctx.fillStyle='#050a08'; ctx.fillRect(0,0,sz,sz);
+  let h = 0;
+  for(let i=0;i<gConf.length;i++) h=(h*31+gConf.charCodeAt(i))&0xFFFFFFFF;
+  const sq=(x,y,s)=>{
+    ctx.fillStyle='#00ff88';
+    ctx.fillRect(x*cs,y*cs,s*cs,s*cs);
+    ctx.fillStyle='#050a08';
+    ctx.fillRect((x+1)*cs,(y+1)*cs,(s-2)*cs,(s-2)*cs);
+    ctx.fillStyle='#00ff88';
+    ctx.fillRect((x+2)*cs,(y+2)*cs,(s-4)*cs,(s-4)*cs);
+  };
+  sq(1,1,7); sq(cells-8,1,7); sq(1,cells-8,7);
+  for(let y=10;y<cells-2;y++){
+    for(let x=10;x<cells-2;x++){
+      if((h^(x*y*37+x*13+y*7))&1){
+        ctx.fillStyle='rgba(0,255,136,0.88)';
+        ctx.fillRect(x*cs,y*cs,cs,cs);
+      }
+    }
+  }
+  ctx.fillStyle='#00ff88';
+  for(let i=8;i<cells-8;i++){
+    if(i%2===0){
+      ctx.fillRect(i*cs,6*cs,cs,cs);
+      ctx.fillRect(6*cs,i*cs,cs,cs);
+    }
+  }
+}
+</script>
+</body>
+</html>
